@@ -1,59 +1,77 @@
 const db = require("../../config/db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const uploadFile = require("../../models/uploadFile");
 
-// exports.register = async (req, res) => {
-//   const { name, email, password, phone, role_id } = req.body;
-//   const hashedPassword = await bcrypt.hash(password, 10);
+exports.register = async (req, res) => {
+  const { user_type, emp_id, password, role_id } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-//   const query =
-//     "INSERT INTO um_users (name, email, password, phone, role_id) VALUES (?, ?, ?,?,?)";
-//   db.query(
-//     query,
-//     [name, email, hashedPassword, phone, role_id],
-//     (err, result) => {
-//       if (err) return res.status(500).json(err);
-//       res.status(201).json({ message: "User registered successfully" });
-//     }
-//   );
-// };
+  const query =
+    "INSERT INTO user (user_type,emp_id,password,role_id) VALUES (?,?,?,?)";
+  db.query(
+    query,
+    [user_type, emp_id, hashedPassword, role_id],
+    (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(201).json({ message: "User registered successfully" });
+    }
+  );
+};
 
-// exports.login = (req, res) => {
-//   const { phone, password } = req.body;
-//   const query = "SELECT * FROM um_users WHERE phone = ?";
+exports.addEmployee = async (req, res) => {
+  //   const image = await uploadFile(req, res);
+  const { emp_id, designation_id, name, mobile, nid, address, image } =
+    req.body;
 
-//   db.query(query, [phone], async (err, results) => {
-//     if (err || results.length === 0) {
-//       return res.status(400).json({ message: "Invalid credentials" });
-//     }
+  const query =
+    "INSERT INTO employee (emp_id, designation_id, name, mobile, nid, address, image ) VALUES (?,?,?,?,?,?,?)";
+  db.query(
+    query,
+    [emp_id, designation_id, name, mobile, nid, address, image],
+    (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(201).json({ message: "Employee registered successfully" });
+    }
+  );
+};
 
-//     const validPassword = await bcrypt.compare(password, results[0].password);
-//     if (!validPassword) {
-//       return res.status(400).json({ message: "Invalid credentials" });
-//     }
+exports.login = (req, res) => {
+  const { emp_id, password } = req.body;
+  const query = "SELECT * FROM user WHERE emp_id = ?";
 
-//     const token = jwt.sign(
-//       { id: results[0].id, role_id: results[0].role_id },
-//       process.env.JWT_SECRET,
-//       {
-//         expiresIn: "90d",
-//       }
-//     );
+  db.query(query, [emp_id], async (err, results) => {
+    if (err || results.length === 0) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-//     const sessionQuery =
-//       "INSERT INTO um_user_sessions (user_id, token, expires_at) VALUES (?, ?, ?)";
+    const validPassword = await bcrypt.compare(password, results[0].password);
+    if (!validPassword) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
 
-//     const expiresAt = new Date();
-//     expiresAt.setDate(expiresAt.getDate() + 90);
+    const token = jwt.sign(
+      { id: results[0].user_id, role_id: results[0].role_id },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "90d",
+      }
+    );
+    res.status(200).json({ token });
+    // const sessionQuery =
+    //   "INSERT INTO um_user_sessions (user_id, token, expires_at) VALUES (?, ?, ?)";
 
-//     db.query(sessionQuery, [results[0].id, token, expiresAt], (err) => {
-//       if (err) {
-//         return res.status(500).json({ message: "Error saving session" });
-//       }
-//       res.status(200).json({ token });
-//     });
-//   });
-// };
+    // const expiresAt = new Date();
+    // expiresAt.setDate(expiresAt.getDate() + 90);
+
+    // db.query(sessionQuery, [results[0].id, token, expiresAt], (err) => {
+    //   if (err) {
+    //     return res.status(500).json({ message: "Error saving session" });
+    //   }
+    //   res.status(200).json({ token });
+    // });
+  });
+};
 
 // exports.getUserFromToken = (req, res) => {
 //   const { token } = req.body;
