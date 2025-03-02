@@ -1,0 +1,201 @@
+use family_planning;
+
+
+CREATE TABLE role (
+    role_id INT PRIMARY KEY AUTO_INCREMENT,
+    role TEXT NOT NULL,
+    create_privilege TEXT,
+    read_privilege TEXT,
+    edit_privilege TEXT,
+    delete_privilege TEXT,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 2️⃣ CREATE DESIGNATION TABLE
+CREATE TABLE designation (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE employee (
+    emp_id VARCHAR(50) PRIMARY KEY,
+    designation_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    mobile VARCHAR(20) UNIQUE,
+    nid VARCHAR(50) UNIQUE,
+    address TEXT,
+    image TEXT,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_employee_designation FOREIGN KEY (designation_id) REFERENCES designation(id) ON DELETE CASCADE
+);
+
+-- 4️⃣ CREATE USER TABLE (AFTER EMPLOYEE & ROLE)
+CREATE TABLE user (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_type ENUM('admin', 'employee') NOT NULL,
+    emp_id VARCHAR(50),
+    password VARCHAR(255) NOT NULL,
+    role_id INT,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_user_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id) ON DELETE SET NULL,
+    CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES role(role_id) ON DELETE SET NULL
+);
+
+-- 5️⃣ CREATE UPAZILA TABLE
+CREATE TABLE upazila (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 6️⃣ CREATE UNION TABLE
+CREATE TABLE union_table (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    upazila_id INT,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_union_upazila FOREIGN KEY (upazila_id) REFERENCES upazila(id) ON DELETE CASCADE
+);
+
+-- 7️⃣ CREATE UNIT TABLE
+CREATE TABLE unit (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    upazila_id INT,
+    union_id INT,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_unit_upazila FOREIGN KEY (upazila_id) REFERENCES upazila(id) ON DELETE CASCADE,
+    CONSTRAINT fk_unit_union FOREIGN KEY (union_id) REFERENCES union_table(id) ON DELETE CASCADE
+);
+
+-- 8️⃣ CREATE EMPLOYEE PLACEMENT TABLE
+CREATE TABLE employee_placement (
+    emp_id VARCHAR(50),
+    district TEXT NOT NULL,
+    upazila_id INT,
+    union_id INT,
+    unit_id INT,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (emp_id, unit_id),
+    CONSTRAINT fk_placement_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE,
+    CONSTRAINT fk_placement_upazila FOREIGN KEY (upazila_id) REFERENCES upazila(id) ON DELETE CASCADE,
+    CONSTRAINT fk_placement_union FOREIGN KEY (union_id) REFERENCES union_table(id) ON DELETE CASCADE,
+    CONSTRAINT fk_placement_unit FOREIGN KEY (unit_id) REFERENCES unit(id) ON DELETE CASCADE
+);
+
+-- 9️⃣ CREATE ATTENDANCE PERIOD TABLE
+CREATE TABLE attendance_period (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    designation_id INT NOT NULL,
+    in_time TIME NOT NULL,
+    out_time TIME NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_attendance_period FOREIGN KEY (designation_id) REFERENCES designation(id) ON DELETE CASCADE
+);
+
+-- 🔟 CREATE WORK TYPE TABLE
+CREATE TABLE work_type (
+    type_id INT PRIMARY KEY AUTO_INCREMENT,
+    name TEXT NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 11️⃣ CREATE WORK FIELD TABLE
+CREATE TABLE work_field (
+    field_id INT PRIMARY KEY AUTO_INCREMENT,
+    work_type_id INT,
+    field TEXT NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_work_field FOREIGN KEY (work_type_id) REFERENCES work_type(type_id) ON DELETE CASCADE
+);
+
+-- 12️⃣ CREATE WORK TABLE
+CREATE TABLE work (
+    work_id INT PRIMARY KEY AUTO_INCREMENT,
+    emp_id VARCHAR(50),
+    work_type_id INT,
+    date DATE NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_work_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE,
+    CONSTRAINT fk_work_type FOREIGN KEY (work_type_id) REFERENCES work_type(type_id) ON DELETE CASCADE
+);
+
+-- 13️⃣ CREATE WORK INFO TABLE
+CREATE TABLE work_info (
+    info_id INT PRIMARY KEY AUTO_INCREMENT,
+    work_id INT,
+    field_id INT,
+    value TEXT NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_work_info FOREIGN KEY (work_id) REFERENCES work(work_id) ON DELETE CASCADE,
+    CONSTRAINT fk_work_info_field FOREIGN KEY (field_id) REFERENCES work_field(field_id) ON DELETE CASCADE
+);
+
+-- 14️⃣ CREATE ATTENDANCE TABLE
+CREATE TABLE attendance (
+    att_id INT PRIMARY KEY AUTO_INCREMENT,
+    emp_id VARCHAR(50),
+    date DATE NOT NULL,
+    in_time TIME NOT NULL,
+    out_time TIME NOT NULL,
+    image TEXT,
+    description TEXT,
+    location TEXT,
+    lati TEXT,
+    longi TEXT,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_attendance_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE
+);
+
+-- 15️⃣ CREATE LEAVE TABLE
+CREATE TABLE leave_table (
+    leave_id INT PRIMARY KEY AUTO_INCREMENT,
+    emp_id VARCHAR(50),
+    description TEXT,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_leave_employee FOREIGN KEY (emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE
+);
+
+-- 16️⃣ CREATE NOTICE TABLE
+CREATE TABLE notice (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    publish_date DATE NOT NULL,
+    notice_name TEXT NOT NULL,
+    notice_description TEXT NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- 17️⃣ CREATE HELP REPORT TABLE
+CREATE TABLE help_report (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    emp_id VARCHAR(50),
+    subject TEXT NOT NULL,
+    description TEXT NOT NULL,
+    date DATE NOT NULL,
+    createDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updateDate DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_help_report FOREIGN KEY (emp_id) REFERENCES employee(emp_id) ON DELETE CASCADE
+);
+
+
+
