@@ -3,6 +3,9 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
 const RoleRouter = require("./routes/RoleRouter");
+const setupRouter = require("./routes/setupRouter");
+const employeeRouter = require("./routes/employeeRouter");
+const workRouter = require("./routes/workRouter");
 
 const db = require("./config/db");
 dotenv.config();
@@ -19,6 +22,9 @@ db.connect((err) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/role", RoleRouter);
+app.use("/api/setup", setupRouter);
+app.use("/api/employee", employeeRouter);
+app.use("/api/work", workRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Family Planning Server");

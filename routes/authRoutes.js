@@ -5,14 +5,12 @@ const {
   getUserFromToken,
   logout,
   addEmployee,
-} = require("../controllers/USER_Auth/authController");
+} = require("../controllers/authController");
 const verifyToken = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/add-employee", addEmployee);
-// router.post("/logout", logout);
-// router.post("/getUserFromToken", getUserFromToken);
+router.post("/get-user-from-token", verifyToken, getUserFromToken);
 
 module.exports = router;

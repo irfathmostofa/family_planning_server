@@ -48,7 +48,7 @@ const uploadFile = (req, res) =>
       if (err) {
         reject(err);
       } else {
-        resolve(req.file ? req.file.filename : null);
+        resolve(req.file ? req.file.filename : "default.jpg");
       }
     });
   });
