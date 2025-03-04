@@ -6,6 +6,7 @@ const RoleRouter = require("./routes/RoleRouter");
 const setupRouter = require("./routes/setupRouter");
 const employeeRouter = require("./routes/employeeRouter");
 const workRouter = require("./routes/workRouter");
+const attendanceRouter = require("./routes/attendanceRouter");
 
 const db = require("./config/db");
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/api/role", RoleRouter);
 app.use("/api/setup", setupRouter);
 app.use("/api/employee", employeeRouter);
 app.use("/api/work", workRouter);
+app.use("/api/attendance", attendanceRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Family Planning Server");

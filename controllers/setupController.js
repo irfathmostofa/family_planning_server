@@ -33,7 +33,7 @@ exports.updateDesignation = (req, res) => {
 
 // Delete Designation
 exports.deleteDesignation = (req, res) => {
-  const { id } = req.params;
+  const { id } = req.body;
   const query = "DELETE FROM designation WHERE id = ?";
   db.query(query, [id], (err, result) => {
     if (err) return res.status(500).json(err);
@@ -144,7 +144,7 @@ exports.updateUnion = (req, res) => {
 
 // Delete Union
 exports.deleteUnion = (req, res) => {
-  const { id } = req.params;
+  const { id } = req.body;
   const query = "DELETE FROM union_table WHERE id = ?";
   db.query(query, [id], (err, result) => {
     if (err) return res.status(500).json(err);

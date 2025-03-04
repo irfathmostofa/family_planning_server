@@ -150,25 +150,7 @@ exports.deleteWorkField = (req, res) => {
 };
 
 // Add Work
-exports.addWork = async (req, res) => {
-  const { emp_id, work_type_id, date } = req.body;
-
-  if (!emp_id || !work_type_id || !date) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  const query = "INSERT INTO work (emp_id, work_type_id, date) VALUES (?,?,?)";
-
-  db.query(query, [emp_id, work_type_id, date], (err, result) => {
-    if (err) {
-      console.error("Error adding work:", err);
-      return res.status(500).json({ message: "Internal server error" });
-    }
-    res
-      .status(201)
-      .json({ message: "Work added successfully", workId: result.insertId });
-  });
-};
+exports.addWork = async (req, res) => {};
 
 // Get All Work Entries
 exports.getAllWork = (req, res) => {
@@ -263,55 +245,149 @@ exports.deleteWork = (req, res) => {
 };
 
 exports.addWorkInfo = async (req, res) => {
-  try {
-    const { WorkInfoData } = req.body;
+  const { emp_id, work_type_id, date, WorkInfoData } = req.body;
 
-    if (!WorkInfoData) {
-      return res.status(400).json({ message: "WorkInfoData is required" });
-    }
-    const parseData = JSON.parse(WorkInfoData);
+  if (!emp_id || !work_type_id || !date) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  if (!WorkInfoData) {
+    return res.status(400).json({ message: "WorkInfoData is required" });
+  }
+
+  let parseData;
+  try {
+    parseData = JSON.parse(WorkInfoData);
     if (parseData.length === 0) {
       return res.status(400).json({ message: "Invalid or empty data" });
     }
+  } catch (error) {
+    return res.status(400).json({ message: "Invalid JSON format" });
+  }
 
-    const values = parseData.map((item) => [
-      item.work_id,
-      item.field_id,
-      item.value,
-    ]);
+  // Insert work first
+  const workQuery =
+    "INSERT INTO work (emp_id, work_type_id, date) VALUES (?,?,?)";
+  db.query(workQuery, [emp_id, work_type_id, date], (err, result) => {
+    if (err) {
+      console.error("Error adding work:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    const workId = result.insertId;
+
+    // Prepare data for work_info
+    const values = parseData.map((item) => [workId, item.field_id, item.value]);
 
     const query = "INSERT INTO work_info (work_id, field_id, value) VALUES ?";
-
     db.query(query, [values], (err, result) => {
       if (err) {
         console.error("Error adding work info:", err);
         return res.status(500).json({ message: "Internal server error" });
       }
-      res.status(201).json({
-        message: "Work info added successfully",
-      });
+
+      res
+        .status(201)
+        .json({ message: "Work and Work Info added successfully" });
     });
-  } catch (error) {
-    console.error("Error parsing WorkInfoData:", error);
-    return res.status(400).json({ message: "Invalid JSON format" });
-  }
+  });
 };
 
-exports.addWork = async (req, res) => {
-  const { designation_id, work_type_id } = req.body;
+exports.AssignDesignationWorkType = async (req, res) => {
+  const { assignData } = req.body;
 
+  if (!assignData) {
+    return res.status(400).json({ message: "assignData is required" });
+  }
 
+  const parseData = JSON.parse(assignData);
+  if (parseData.length === 0) {
+    return res.status(400).json({ message: "Invalid or empty data" });
+  }
 
-  const query =
-    "INSERT INTO designation_work_type (designation_id, work_type_id) VALUES (?,?)";
+  const values = parseData.map((item) => [
+    item.designation_id,
+    item.work_type_id,
+  ]);
 
-  db.query(query, [emp_id, work_type_id, date], (err, result) => {
+  // Check for duplicates
+  const checkQuery = `
+    SELECT designation_id, work_type_id 
+    FROM designation_work_type 
+    WHERE (designation_id, work_type_id) IN (${values
+      .map(() => "(?, ?)")
+      .join(",")})
+  `;
+
+  const flatValues = values.flat(); // Flatten the array for SQL placeholders
+
+  db.query(checkQuery, flatValues, (err, existingRecords) => {
     if (err) {
-      console.error("Error adding work:", err);
+      console.error("Error checking existing assignments:", err);
       return res.status(500).json({ message: "Internal server error" });
     }
-    res
-      .status(201)
-      .json({ message: "Work added successfully", workId: result.insertId });
+
+    // Filter out already existing records
+    const existingSet = new Set(
+      existingRecords.map(
+        (record) => `${record.designation_id}-${record.work_type_id}`
+      )
+    );
+    const newValues = values.filter(
+      ([designation_id, work_type_id]) =>
+        !existingSet.has(`${designation_id}-${work_type_id}`)
+    );
+
+    if (newValues.length === 0) {
+      return res.status(400).json({ message: "All entries already exist" });
+    }
+
+    // Insert new records
+    const insertQuery =
+      "INSERT INTO designation_work_type (designation_id, work_type_id) VALUES ?";
+    db.query(insertQuery, [newValues], (insertErr, result) => {
+      if (insertErr) {
+        console.error("Error inserting assignments:", insertErr);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      res.status(201).json({ message: "Assignments added successfully" });
+    });
+  });
+};
+exports.getAssignedDesignationWorkTypes = async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ message: "Designation ID is required" });
+  }
+  const query = `
+    SELECT dwt.id, d.designation_name, dwt.work_type_id,wt.name AS work_type
+    FROM designation_work_type dwt
+    JOIN designation d ON dwt.designation_id = d.id
+    JOIN work_type wt ON dwt.work_type_id = wt.id
+    where d.id=?
+  `;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Error fetching assigned work types:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    res.status(200).json(results);
+  });
+};
+
+exports.deleteAssignDesignationWorkType = (req, res) => {
+  const { id } = req.body;
+  const query = "DELETE FROM designation_work_type WHERE id = ?";
+
+  db.query(query, [id], (err, result) => {
+    if (err) {
+      console.error("Error deleting work record:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Work record not found" });
+    }
+    res.status(200).json({ message: "Work deleted successfully" });
   });
 };
