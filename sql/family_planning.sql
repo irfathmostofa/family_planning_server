@@ -18,6 +18,8 @@
 --
 -- Table structure for table `attendance`
 --
+CREATE DATABASE family_planning;
+USE family_planning;
 
 DROP TABLE IF EXISTS `attendance`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
