@@ -24,29 +24,29 @@ const verifyToken = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 // Designation Routes
-router.post("/add-designation", addDesignation);
-router.post("/get-designations", getDesignations);
-router.post("/update-designation", updateDesignation);
-router.post("/delete-designation", deleteDesignation);
+router.post("/add-designation", verifyToken, addDesignation);
+router.post("/get-designations", verifyToken, getDesignations);
+router.post("/update-designation", verifyToken, updateDesignation);
+router.post("/delete-designation", verifyToken, deleteDesignation);
 
 // Upazila Routes
-router.post("/add-upazila", addUpazila);
-router.post("/get-upazilas", getUpazilas);
-router.post("/update-upazila", updateUpazila);
-router.post("/delete-upazila", deleteUpazila);
+router.post("/add-upazila", verifyToken, addUpazila);
+router.post("/get-upazilas", verifyToken, getUpazilas);
+router.post("/update-upazila", verifyToken, updateUpazila);
+router.post("/delete-upazila", verifyToken, deleteUpazila);
 
 // Union Routes
-router.post("/add-union", addUnion);
-router.post("/get-unions", getUnions);
-router.post("/get-union-by-id", getUnionById);
-router.post("/update-union", updateUnion);
-router.post("/delete-union", deleteUnion);
+router.post("/add-union", verifyToken, addUnion);
+router.post("/get-unions", verifyToken, getUnions);
+router.post("/get-union-by-id", verifyToken, getUnionById);
+router.post("/update-union", verifyToken, updateUnion);
+router.post("/delete-union", verifyToken, deleteUnion);
 
 // Unit Routes
-router.post("/add-unit", addUnit);
-router.post("/get-units", getUnits);
-router.post("/get-unit-by-id", getUnitById);
-router.post("/update-unit", updateUnit);
-router.post("/delete-unit", deleteUnit);
+router.post("/add-unit", verifyToken, addUnit);
+router.post("/get-units", verifyToken, getUnits);
+router.post("/get-unit-by-id", verifyToken, getUnitById);
+router.post("/update-unit", verifyToken, updateUnit);
+router.post("/delete-unit", verifyToken, deleteUnit);
 
 module.exports = router;
