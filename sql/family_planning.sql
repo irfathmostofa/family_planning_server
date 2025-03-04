@@ -16,10 +16,36 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `activity_log`
+--
+
+DROP TABLE IF EXISTS `activity_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `activity_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `emp_id` varchar(50) DEFAULT NULL,
+  `action` text NOT NULL,
+  `module` text NOT NULL,
+  `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_activity_employee` (`emp_id`),
+  CONSTRAINT `fk_activity_employee` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `activity_log`
+--
+
+LOCK TABLES `activity_log` WRITE;
+/*!40000 ALTER TABLE `activity_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `activity_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `attendance`
 --
-CREATE DATABASE family_planning;
-USE family_planning;
 
 DROP TABLE IF EXISTS `attendance`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -105,6 +131,36 @@ LOCK TABLES `designation` WRITE;
 /*!40000 ALTER TABLE `designation` DISABLE KEYS */;
 INSERT INTO `designation` VALUES (1,'FWA','2025-03-03 12:38:45','2025-03-03 12:38:45'),(2,'Other','2025-03-03 12:38:57','2025-03-03 12:38:57');
 /*!40000 ALTER TABLE `designation` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `designation_work_type`
+--
+
+DROP TABLE IF EXISTS `designation_work_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `designation_work_type` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `designation_id` int NOT NULL,
+  `work_type_id` int NOT NULL,
+  `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_designation_work` (`designation_id`),
+  KEY `fk_work_type_designation` (`work_type_id`),
+  CONSTRAINT `fk_designation_work` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_work_type_designation` FOREIGN KEY (`work_type_id`) REFERENCES `work_type` (`type_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `designation_work_type`
+--
+
+LOCK TABLES `designation_work_type` WRITE;
+/*!40000 ALTER TABLE `designation_work_type` DISABLE KEYS */;
+/*!40000 ALTER TABLE `designation_work_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -547,4 +603,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-03 14:37:11
+-- Dump completed on 2025-03-04 11:59:02

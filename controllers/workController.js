@@ -296,3 +296,22 @@ exports.addWorkInfo = async (req, res) => {
     return res.status(400).json({ message: "Invalid JSON format" });
   }
 };
+
+exports.addWork = async (req, res) => {
+  const { designation_id, work_type_id } = req.body;
+
+
+
+  const query =
+    "INSERT INTO designation_work_type (designation_id, work_type_id) VALUES (?,?)";
+
+  db.query(query, [emp_id, work_type_id, date], (err, result) => {
+    if (err) {
+      console.error("Error adding work:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    res
+      .status(201)
+      .json({ message: "Work added successfully", workId: result.insertId });
+  });
+};
