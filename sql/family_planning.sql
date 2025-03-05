@@ -55,7 +55,7 @@ CREATE TABLE `attendance` (
   `emp_id` varchar(50) DEFAULT NULL,
   `date` date NOT NULL,
   `in_time` time NOT NULL,
-  `out_time` time NOT NULL,
+  `type` varchar(50) NOT NULL,
   `image` text,
   `description` text,
   `location` text,
@@ -90,6 +90,7 @@ CREATE TABLE `attendance_period` (
   `designation_id` int NOT NULL,
   `in_time` time NOT NULL,
   `out_time` time NOT NULL,
+  `leaveBalance` int NOT NULL,
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -603,4 +604,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-04 11:59:02
+-- Dump completed on 2025-03-05 14:29:55
