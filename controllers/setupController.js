@@ -6,9 +6,12 @@ exports.addDesignation = async (req, res) => {
   const query = "INSERT INTO designation (name) VALUES (?)";
   db.query(query, [name], (err, result) => {
     if (err) return res.status(500).json(err);
-    res.status(201).json({ message: "Designation Added successfully" });
+    res
+      .status(201)
+      .json({ message: "Designation Added successfully", id: result.insertId });
   });
 };
+
 // Get All Designations
 exports.getDesignations = (req, res) => {
   const query = "SELECT * FROM designation";

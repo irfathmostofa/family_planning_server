@@ -3,24 +3,28 @@ const uploadFile = require("../models/uploadFile");
 
 //Create (Add Attendance)
 exports.addAttendancePeriod = async (req, res) => {
-  const { designation_id, in_time, out_time } = req.body;
+  const { designation_id, in_time, out_time, leaveBalance } = req.body;
 
-  if (!designation_id || !in_time || !out_time) {
+  if (!designation_id || !in_time || !out_time || !leaveBalance) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   const query =
-    "INSERT INTO attendance_period (designation_id, in_time, out_time) VALUES (?,?,?)";
-  db.query(query, [designation_id, in_time, out_time], (err, result) => {
-    if (err) {
-      console.error("Error adding attendance:", err);
-      return res.status(500).json({ message: "Internal server error" });
+    "INSERT INTO attendance_period (designation_id, in_time, out_time,leaveBalance) VALUES (?,?,?,?)";
+  db.query(
+    query,
+    [designation_id, in_time, out_time, leaveBalance],
+    (err, result) => {
+      if (err) {
+        console.error("Error adding attendance:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      res.status(201).json({
+        message: "Attendance Period Added successfully",
+        id: result.insertId,
+      });
     }
-    res.status(201).json({
-      message: "Attendance Period Added successfully",
-      id: result.insertId,
-    });
-  });
+  );
 };
 
 //Read (Get All Attendance)
@@ -38,26 +42,30 @@ exports.getAllAttendancePeriod = async (req, res) => {
 
 // Update (Modify Attendance)
 exports.updateAttendancePeriod = async (req, res) => {
-  const { id, designation_id, in_time, out_time } = req.body;
+  const { id, designation_id, in_time, out_time, leaveBalance } = req.body;
 
-  if (!designation_id || !in_time || !out_time) {
+  if (!designation_id || !in_time || !out_time || !leaveBalance) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   const query =
-    "UPDATE attendance_period SET designation_id=?, in_time=?, out_time=? WHERE id=?";
-  db.query(query, [designation_id, in_time, out_time, id], (err, result) => {
-    if (err) {
-      console.error("Error updating attendance:", err);
-      return res.status(500).json({ message: "Internal server error" });
-    }
+    "UPDATE attendance_period SET designation_id=?, in_time=?, out_time=?,leaveBalance=? WHERE id=?";
+  db.query(
+    query,
+    [designation_id, in_time, out_time, leaveBalance, id],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating attendance:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ message: "Attendance record not found" });
-    }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Attendance record not found" });
+      }
 
-    res.status(200).json({ message: "Attendance updated successfully" });
-  });
+      res.status(200).json({ message: "Attendance updated successfully" });
+    }
+  );
 };
 
 // Delete (Remove Attendance)
@@ -81,17 +89,9 @@ exports.deleteAttendancePeriod = async (req, res) => {
 
 exports.addAttendance = async (req, res) => {
   try {
-    const {
-      emp_id,
-      date,
-      in_time,
-      out_time,
-      description,
-      location,
-      lat,
-      longi,
-    } = req.body;
-    if (!emp_id || !date || !in_time || !out_time) {
+    const { emp_id, date, in_time, type, description, location, lat, longi } =
+      req.body;
+    if (!emp_id || !date || !in_time || !type) {
       return res.status(400).json({ message: "Required fields are missing" });
     }
 
@@ -104,21 +104,11 @@ exports.addAttendance = async (req, res) => {
     }
 
     const query =
-      "INSERT INTO attendance (emp_id, date, in_time, out_time, image, description, location, lat, longi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO attendance (emp_id, date, in_time, type, image, description, location, lat, longi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     db.query(
       query,
-      [
-        emp_id,
-        date,
-        in_time,
-        out_time,
-        image,
-        description,
-        location,
-        lat,
-        longi,
-      ],
+      [emp_id, date, in_time, type, image, description, location, lat, longi],
       (err, result) => {
         if (err) {
           console.error("Error adding attendance:", err);
@@ -164,7 +154,7 @@ exports.updateAttendance = async (req, res) => {
       emp_id,
       date,
       in_time,
-      out_time,
+      type,
       description,
       location,
       lat,
@@ -182,21 +172,11 @@ exports.updateAttendance = async (req, res) => {
       }
 
       const updateQuery =
-        "UPDATE attendance SET emp_id = ?, date = ?, in_time = ?, out_time = ?, description = ?, location = ?, lat = ?, longi = ? WHERE id = ?";
+        "UPDATE attendance SET emp_id = ?, date = ?, in_time = ?, type = ?, description = ?, location = ?, lat = ?, longi = ? WHERE id = ?";
 
       db.query(
         updateQuery,
-        [
-          emp_id,
-          date,
-          in_time,
-          out_time,
-          description,
-          location,
-          lat,
-          longi,
-          id,
-        ],
+        [emp_id, date, in_time, type, description, location, lat, longi, id],
         (err, result) => {
           if (err) {
             console.error("Error updating attendance:", err);
