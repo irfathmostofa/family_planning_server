@@ -5,22 +5,61 @@ const uploadFile = require("../models/uploadFile");
 exports.addEmployee = async (req, res) => {
   try {
     const image = await uploadFile(req, res);
-    const { emp_id, designation_id, name, mobile, nid, address } = req.body;
+    const {
+      emp_id,
+      designation_id,
+      district,
+      upazila_id,
+      union_id,
+      unit_id,
+      name,
+      mobile,
+      nid,
+      address,
+    } = req.body;
 
-    const query =
-      "INSERT INTO employee (emp_id, designation_id, name, mobile, nid, address, image) VALUES (?,?,?,?,?,?,?)";
+    const employeeQuery =
+      "INSERT INTO employee (emp_id, designation_id, name, mobile, nid, address, image) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    const placementQuery =
+      "INSERT INTO employee_placement (emp_id, district, upazila_id, union_id, unit_id) VALUES (?, ?, ?, ?, ?)";
+
+    // Insert employee
     db.query(
-      query,
+      employeeQuery,
       [emp_id, designation_id, name, mobile, nid, address, image],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-        res.status(201).json({ message: "Employee registered successfully" });
+      (err) => {
+        if (err) {
+          console.error("Error inserting employee:", err);
+          return res
+            .status(500)
+            .json({ message: "Employee registration failed" });
+        }
+
+        // Insert employee placement
+        db.query(
+          placementQuery,
+          [emp_id, district, upazila_id, union_id, unit_id],
+          (err) => {
+            if (err) {
+              console.error("Error inserting employee placement:", err);
+              return res
+                .status(500)
+                .json({ message: "Placement registration failed" });
+            }
+
+            res
+              .status(201)
+              .json({ message: "Employee registered successfully" });
+          }
+        );
       }
     );
   } catch (error) {
-    res.status(500).json({ error: "File upload failed", details: error });
+    console.error("File upload error:", error);
+    res.status(500).json({ message: "File upload failed", details: error });
   }
 };
+
 
 // Get All Employees
 exports.getEmployees = (req, res) => {
