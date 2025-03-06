@@ -29,7 +29,8 @@ exports.addAttendancePeriod = async (req, res) => {
 
 //Read (Get All Attendance)
 exports.getAllAttendancePeriod = async (req, res) => {
-  const query = "SELECT * FROM attendance_period ORDER BY id DESC";
+  const query =
+    "SELECT designation.id as designationID,designation.name,apj.* FROM attendance_period as apj left join designation on designation.id=apj.designation_id ORDER BY designation.id DESC";
 
   db.query(query, (err, results) => {
     if (err) {
