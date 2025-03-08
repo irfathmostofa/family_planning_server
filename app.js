@@ -1,18 +1,26 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const path = require("path");
 const authRoutes = require("./routes/authRoutes");
 const RoleRouter = require("./routes/RoleRouter");
 const setupRouter = require("./routes/setupRouter");
 const employeeRouter = require("./routes/employeeRouter");
 const workRouter = require("./routes/workRouter");
 const attendanceRouter = require("./routes/attendanceRouter");
-
 const db = require("./config/db");
 dotenv.config();
 const app = express();
 app.use(cors());
+var corsOptions = {
+  origin: "*",
+
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "Files/image")));
 db.connect((err) => {
   if (err) {
     console.error("Database connection failed:", err);

@@ -92,39 +92,61 @@ exports.addAttendance = async (req, res) => {
   try {
     const { emp_id, date, in_time, type, description, location, lat, longi } =
       req.body;
+
     if (!emp_id || !date || !in_time || !type) {
       return res.status(400).json({ message: "Required fields are missing" });
     }
 
-    let image = null;
+    // Mandatory Image Upload
+    let image;
     try {
       image = await uploadFile(req, res);
+      if (!image) {
+        return res.status(400).json({ message: "Image is required" });
+      }
     } catch (uploadError) {
       console.error("File upload failed:", uploadError);
       return res.status(500).json({ message: "Image upload failed" });
     }
 
-    const query =
-      "INSERT INTO attendance (emp_id, date, in_time, type, image, description, location, lat, longi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    db.query(
-      query,
-      [emp_id, date, in_time, type, image, description, location, lat, longi],
-      (err, result) => {
-        if (err) {
-          console.error("Error adding attendance:", err);
-          return res.status(500).json({ message: "Internal server error" });
-        }
-        res.status(201).json({
-          message: "Attendance added successfully",
-        });
+    // Check for duplicate entry (same emp_id, date, and type)
+    const checkQuery =
+      "SELECT * FROM attendance WHERE emp_id = ? AND date = ? AND type = ?";
+    db.query(checkQuery, [emp_id, date, type], (err, results) => {
+      if (err) {
+        console.error("Error checking duplicate attendance:", err);
+        return res.status(500).json({ message: "Internal server error" });
       }
-    );
+
+      if (results.length > 0) {
+        return res
+          .status(400)
+          .json({
+            message: "Attendance already exists on this date",
+          });
+      }
+
+      // Insert Attendance
+      const insertQuery =
+        "INSERT INTO attendance (emp_id, date, in_time, type, image, description, location, lat, longi) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      db.query(
+        insertQuery,
+        [emp_id, date, in_time, type, image, description, location, lat, longi],
+        (insertErr, result) => {
+          if (insertErr) {
+            console.error("Error adding attendance:", insertErr);
+            return res.status(500).json({ message: "Internal server error" });
+          }
+          res.status(201).json({ message: "Attendance added successfully" });
+        }
+      );
+    });
   } catch (error) {
     console.error("Unexpected error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 exports.getAllAttendance = async (req, res) => {
   const { emp_id, startDate, endDate } = req.body;
   let query = "SELECT * FROM attendance WHERE 1";

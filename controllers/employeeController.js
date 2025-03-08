@@ -102,33 +102,88 @@ exports.getEmployeeById = (req, res) => {
 // Update Employee
 exports.updateEmployee = async (req, res) => {
   try {
+    const { emp_id, designation_id, name, mobile, nid, address } = req.body;
     let image = null;
+
+    // Check if a new image is uploaded
     if (req.file) {
       image = await uploadFile(req, res);
+    } else {
+      // Fetch the existing image from the database
+      const selectQuery = "SELECT image FROM employee WHERE emp_id = ?";
+      db.query(selectQuery, [emp_id], (err, results) => {
+        if (err) {
+          console.error("Error fetching existing image:", err);
+          return res.status(500).json({ message: "Internal server error" });
+        }
+        if (results.length > 0) {
+          image = results[0].image; // Keep the old image
+        }
+
+        // Proceed with the update
+        updateEmployee(
+          emp_id,
+          designation_id,
+          name,
+          mobile,
+          nid,
+          address,
+          image,
+          res
+        );
+      });
+      return; // Stop execution here as the update happens in the callback
     }
 
-    const { emp_id, designation_id, name, mobile, nid, address } = req.body;
-    const query = `
-      UPDATE employee 
-      SET designation_id = ?, name = ?, mobile = ?, nid = ?, address = ?, 
-          image = COALESCE(?, image) 
-      WHERE emp_id = ?`;
-
-    db.query(
-      query,
-      [designation_id, name, mobile, nid, address, image, emp_id],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-        if (result.affectedRows === 0)
-          return res.status(404).json({ message: "Employee not found" });
-
-        res.status(200).json({ message: "Employee updated successfully" });
-      }
+    // If image is available immediately, update without fetching
+    updateEmployee(
+      emp_id,
+      designation_id,
+      name,
+      mobile,
+      nid,
+      address,
+      image,
+      res
     );
   } catch (error) {
-    res.status(500).json({ error: "File upload failed", details: error });
+    console.error("Unexpected error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Separate function to handle the update query
+const updateEmployee = (
+  emp_id,
+  designation_id,
+  name,
+  mobile,
+  nid,
+  address,
+  image,
+  res
+) => {
+  const query = `
+    UPDATE employee 
+    SET designation_id = ?, name = ?, mobile = ?, nid = ?, address = ?, image = ? 
+    WHERE emp_id = ?`;
+
+  db.query(
+    query,
+    [designation_id, name, mobile, nid, address, image, emp_id],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating employee:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Employee not found" });
+      }
+      res.status(200).json({ message: "Employee updated successfully" });
+    }
+  );
+};
+
 
 // Delete Employee
 exports.deleteEmployee = (req, res) => {
