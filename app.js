@@ -8,19 +8,20 @@ const setupRouter = require("./routes/setupRouter");
 const employeeRouter = require("./routes/employeeRouter");
 const workRouter = require("./routes/workRouter");
 const attendanceRouter = require("./routes/attendanceRouter");
+const otherRouter = require("./routes/otherRouter");
 const db = require("./config/db");
 dotenv.config();
 const app = express();
 app.use(cors());
 var corsOptions = {
   origin: "*",
-
   optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "Files/image")));
+
 db.connect((err) => {
   if (err) {
     console.error("Database connection failed:", err);
@@ -35,6 +36,7 @@ app.use("/api/setup", setupRouter);
 app.use("/api/employee", employeeRouter);
 app.use("/api/work", workRouter);
 app.use("/api/attendance", attendanceRouter);
+app.use("/api/other", otherRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Family Planning Server");
