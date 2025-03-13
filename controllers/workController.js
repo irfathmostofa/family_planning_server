@@ -362,7 +362,7 @@ exports.getAssignedDesignationWorkTypes = async (req, res) => {
     SELECT dwt.id, d.name, dwt.work_type_id, wt.name AS work_type
     FROM designation_work_type dwt
     JOIN designation d ON dwt.designation_id = d.id
-    JOIN work_type wt ON dwt.work_type_id = wt.work_id
+    JOIN work_type wt ON dwt.work_type_id = wt.type_id
     WHERE 1=1
   `;
 
