@@ -354,20 +354,26 @@ exports.AssignDesignationWorkType = async (req, res) => {
     });
   });
 };
+
 exports.getAssignedDesignationWorkTypes = async (req, res) => {
   const { id } = req.body;
-  if (!id) {
-    return res.status(400).json({ message: "Designation ID is required" });
-  }
-  const query = `
-    SELECT dwt.id, d.designation_name, dwt.work_type_id,wt.name AS work_type
+
+  let query = `
+    SELECT dwt.id, d.name, dwt.work_type_id, wt.name AS work_type
     FROM designation_work_type dwt
     JOIN designation d ON dwt.designation_id = d.id
     JOIN work_type wt ON dwt.work_type_id = wt.id
-    where d.id=?
+    WHERE 1=1
   `;
 
-  db.query(query, [id], (err, results) => {
+  const params = [];
+
+  if (id) {
+    query += " AND d.id = ?";
+    params.push(id);
+  }
+
+  db.query(query, params, (err, results) => {
     if (err) {
       console.error("Error fetching assigned work types:", err);
       return res.status(500).json({ message: "Internal server error" });
