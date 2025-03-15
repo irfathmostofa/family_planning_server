@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/get-user-from-token", verifyToken, getUserFromToken);
+router.post("/get-user-from-token", getUserFromToken);
 router.post("/get-user", verifyToken, getUsers);
 router.post("/delete-user", verifyToken, deleteUser);
 
