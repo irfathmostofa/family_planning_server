@@ -65,12 +65,13 @@ exports.getEmployees = (req, res) => {
   const { designation, search } = req.body;
   let params = [];
   let query = `
-    SELECT e.*, d.name as designation_name ,u.user_type,role
-    FROM employee AS e 
-    JOIN designation AS d ON d.id = e.designation_id
-    JOIN user AS u ON u.emp_id=e.emp_id
-    JOIN role AS r ON u.role_id=r.role_id
-    WHERE 1=1 GROUP by e.emp_id ORDER BY e.id DESC`;
+    SELECT 
+    e.*, 
+    d.name AS designation_name 
+FROM employee AS e
+JOIN designation AS d ON d.id = e.designation_id
+GROUP BY e.emp_id, d.name
+ORDER BY e.id DESC`;
 
   if (designation) {
     query += " AND d.name = ?";

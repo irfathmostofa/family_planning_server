@@ -24,7 +24,6 @@ exports.register = async (req, res) => {
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-    
       const insertQuery =
         "INSERT INTO user (user_type, emp_id, password, role_id) VALUES (?, ?, ?, ?)";
       db.query(
@@ -124,3 +123,37 @@ left join unit on ep.unit_id=unit.id
 //     return res.status(401).json({ message: "User token delete" });
 //   });
 // };
+
+exports.getUsers = (req, res) => {
+  const { designation, search } = req.body;
+  let params = [];
+  let query = `
+    SELECT 
+    e.*, 
+    d.name AS designation_name, 
+    u.user_type, 
+    u.emp_id,
+    r.role,
+    u.user_id as userId
+FROM employee AS e
+JOIN designation AS d ON d.id = e.designation_id
+JOIN user AS u ON u.emp_id = e.emp_id
+JOIN role AS r ON u.role_id = r.role_id
+GROUP BY e.emp_id, d.name, u.user_type, r.role,u.user_id
+ORDER BY e.id DESC`;
+
+  if (designation) {
+    query += " AND d.name = ?";
+    params.push(designation);
+  }
+
+  if (search) {
+    query += " AND (e.name LIKE ? OR e.mobile LIKE ?)";
+    params.push(`%${search}%`, `%${search}%`);
+  }
+
+  db.query(query, params, (err, results) => {
+    if (err) return res.status(500).json(err);
+    res.status(200).json(results);
+  });
+};
