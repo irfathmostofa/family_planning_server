@@ -262,34 +262,51 @@ exports.deletePageRoute = (req, res) => {
 };
 
 exports.getRoleWithPrivileges = async (req, res) => {
-
+  const { role_id } = req.params;
   const query = `
     SELECT 
-      r.role_id,
-      r.role AS roleName,
-      pr.pageName,
-      pr.pageRoute,
-      r.create_privilege,
-      r.read_privilege,
-      r.edit_privilege,
-      r.delete_privilege
-    FROM role r
-    LEFT JOIN privillegeroute pr
+        p.pageName,
+        p.pageRoute,
+        r.create_privilege,
+        r.read_privilege,
+        r.edit_privilege,
+        r.delete_privilege
+    FROM 
+        role r
+    JOIN 
+        privillegeroute p 
+    ON 
+        FIND_IN_SET(p.pageRoute, r.create_privilege) 
+        OR FIND_IN_SET(p.pageRoute, r.read_privilege)
+        OR FIND_IN_SET(p.pageRoute, r.edit_privilege)
+        OR FIND_IN_SET(p.pageRoute, r.delete_privilege)
+    WHERE 
+        r.role_id = ?;
   `;
 
   db.query(query, [role_id], (err, results) => {
     if (err) {
-      console.error("Error fetching role with privileges:", err);
+      console.error("Error fetching role data:", err);
       return res.status(500).json({ message: "Internal server error" });
     }
 
     if (results.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "Role not found or no privileges assigned" });
+      return res.status(404).json({ message: "Role not found" });
     }
 
-    
+    const storedPrivileges = results[0];
+
+    const roleData = {
+      roleName: storedPrivileges.roleName,
+      page: results.map((row) => ({
+        pageName: row.pageName,
+        pageRoute: row.pageRoute,
+        create_privilege: storedPrivileges.create_privilege,
+        read_privilege: storedPrivileges.read_privilege,
+        edit_privilege: storedPrivileges.edit_privilege,
+        delete_privilege: storedPrivileges.delete_privilege,
+      })),
+    };
 
     res.status(200).json(roleData);
   });

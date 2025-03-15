@@ -20,6 +20,7 @@ const {
   deleteUnit,
   addPageRoute,
   deletePageRoute,
+  getRoleWithPrivileges,
 } = require("../controllers/setupController");
 
 const verifyToken = require("../middlewares/authMiddleware");
@@ -53,4 +54,11 @@ router.post("/delete-unit", verifyToken, deleteUnit);
 //Page route
 router.post("/add-page-route", verifyToken, addPageRoute);
 router.post("/delete-page-route", verifyToken, deletePageRoute);
+//Privilege
+router.post(
+  "/get-Role-With-Privileges/:id",
+  verifyToken,
+  getRoleWithPrivileges
+);
+
 module.exports = router;
