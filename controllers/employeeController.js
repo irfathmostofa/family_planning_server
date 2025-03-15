@@ -60,7 +60,6 @@ exports.addEmployee = async (req, res) => {
   }
 };
 
-
 // Get All Employees
 exports.getEmployees = (req, res) => {
   const { designation, search } = req.body;
@@ -71,7 +70,7 @@ exports.getEmployees = (req, res) => {
     JOIN designation AS d ON d.id = e.designation_id
     JOIN user AS u ON u.emp_id=e.emp_id
     JOIN role AS r ON u.role_id=r.role_id
-    WHERE 1=1`;
+    WHERE 1=1 GROUP by e.emp_id ORDER BY e.id DESC`;
 
   if (designation) {
     query += " AND d.name = ?";
@@ -185,7 +184,6 @@ const updateEmployee = (
     }
   );
 };
-
 
 // Delete Employee
 exports.deleteEmployee = (req, res) => {

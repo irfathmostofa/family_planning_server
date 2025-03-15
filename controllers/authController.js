@@ -5,18 +5,44 @@ const uploadFile = require("../models/uploadFile");
 
 exports.register = async (req, res) => {
   const { user_type, emp_id, password, role_id } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
 
-  const query =
-    "INSERT INTO user (user_type,emp_id,password,role_id) VALUES (?,?,?,?)";
-  db.query(
-    query,
-    [user_type, emp_id, hashedPassword, role_id],
-    (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(201).json({ message: "User registered successfully" });
-    }
-  );
+  if (!user_type || !emp_id || !password || !role_id) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const checkUserQuery = "SELECT * FROM user WHERE emp_id = ?";
+    db.query(checkUserQuery, [emp_id], async (err, results) => {
+      if (err) {
+        console.error("Error checking existing user:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+
+      if (results.length > 0) {
+        return res.status(409).json({ message: "User already exists" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+    
+      const insertQuery =
+        "INSERT INTO user (user_type, emp_id, password, role_id) VALUES (?, ?, ?, ?)";
+      db.query(
+        insertQuery,
+        [user_type, emp_id, hashedPassword, role_id],
+        (err, result) => {
+          if (err) {
+            console.error("Error registering user:", err);
+            return res.status(500).json({ message: "Internal server error" });
+          }
+          res.status(201).json({ message: "User registered successfully" });
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 exports.login = (req, res) => {

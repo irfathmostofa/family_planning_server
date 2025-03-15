@@ -260,3 +260,37 @@ exports.deletePageRoute = (req, res) => {
     res.status(200).json({ message: "Page Route deleted successfully" });
   });
 };
+
+exports.getRoleWithPrivileges = async (req, res) => {
+
+  const query = `
+    SELECT 
+      r.role_id,
+      r.role AS roleName,
+      pr.pageName,
+      pr.pageRoute,
+      r.create_privilege,
+      r.read_privilege,
+      r.edit_privilege,
+      r.delete_privilege
+    FROM role r
+    LEFT JOIN privillegeroute pr
+  `;
+
+  db.query(query, [role_id], (err, results) => {
+    if (err) {
+      console.error("Error fetching role with privileges:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    if (results.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "Role not found or no privileges assigned" });
+    }
+
+    
+
+    res.status(200).json(roleData);
+  });
+};
