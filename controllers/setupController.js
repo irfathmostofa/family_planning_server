@@ -248,7 +248,13 @@ exports.addPageRoute = async (req, res) => {
     res.status(201).json({ message: "Page Route Added successfully" });
   });
 };
-
+exports.getPrivilegeRoute = (req, res) => {
+  const query = "SELECT * FROM privillegeroute ORDER BY id DESC";
+  db.query(query, (err, results) => {
+    if (err) return res.status(500).json(err);
+    res.status(200).json(results);
+  });
+};
 exports.deletePageRoute = (req, res) => {
   const { id } = req.body;
   const query = "DELETE FROM privillegeroute WHERE id = ?";
