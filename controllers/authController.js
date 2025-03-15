@@ -103,6 +103,7 @@ left join attendance_period as ap on ap.designation_id=e.designation_id
 left join upazila on ep.upazila_id=upazila.id
 left join union_table as ut on ep.union_id=ut.id
 left join unit on ep.unit_id=unit.id
+WHERE e.emp_id=?
 `;
 
     db.query(query, [decoded.id], (err, results) => {
