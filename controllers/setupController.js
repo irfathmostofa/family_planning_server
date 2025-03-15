@@ -298,13 +298,29 @@ exports.getRoleWithPrivileges = async (req, res) => {
 
     const roleData = {
       roleName: storedPrivileges.roleName,
+      create_privilege: storedPrivileges.create_privilege,
+      read_privilege: storedPrivileges.read_privilege,
+      edit_privilege: storedPrivileges.edit_privilege,
+      delete_privilege: storedPrivileges.delete_privilege,
       page: results.map((row) => ({
         pageName: row.pageName,
         pageRoute: row.pageRoute,
-        create_privilege: storedPrivileges.create_privilege,
-        read_privilege: storedPrivileges.read_privilege,
-        edit_privilege: storedPrivileges.edit_privilege,
-        delete_privilege: storedPrivileges.delete_privilege,
+        create_privilege: storedPrivileges.create_privilege.includes(
+          row.pageRoute
+        )
+          ? true
+          : false,
+        read_privilege: storedPrivileges.read_privilege.includes(row.pageRoute)
+          ? true
+          : false,
+        edit_privilege: storedPrivileges.edit_privilege.includes(row.pageRoute)
+          ? true
+          : false,
+        delete_privilege: storedPrivileges.delete_privilege.includes(
+          row.pageRoute
+        )
+          ? true
+          : false,
       })),
     };
 

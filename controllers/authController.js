@@ -69,6 +69,18 @@ exports.login = (req, res) => {
   });
 };
 
+exports.deleteUser = (req, res) => {
+  const { user_id } = req.body;
+  const query = "DELETE FROM user WHERE user_id = ?";
+  db.query(query, [user_id], (err, result) => {
+    if (err) return res.status(500).json(err);
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: "User not found" });
+
+    res.status(200).json({ message: "User deleted successfully" });
+  });
+};
+
 exports.getUserFromToken = (req, res) => {
   const { token } = req.body;
 
