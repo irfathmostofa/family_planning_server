@@ -69,22 +69,26 @@ exports.deleteWorkType = (req, res) => {
 };
 // Add Work Field
 exports.addWorkField = async (req, res) => {
-  const { work_type_id, field, field_type } = req.body;
+  const { work_type_id, field, field_type, DropdownMenu } = req.body;
 
   if (!work_type_id || !field || !field_type) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   const query =
-    "INSERT INTO work_field (work_type_id, field, field_type) VALUES (?,?,?)";
+    "INSERT INTO work_field (work_type_id, field, field_type,DropdownMenu) VALUES (?,?,?,?)";
 
-  db.query(query, [work_type_id, field, field_type], (err, result) => {
-    if (err) {
-      console.error("Error adding work field:", err);
-      return res.status(500).json({ message: "Internal server error" });
+  db.query(
+    query,
+    [work_type_id, field, field_type, DropdownMenu],
+    (err, result) => {
+      if (err) {
+        console.error("Error adding work field:", err);
+        return res.status(500).json({ message: "Internal server error" });
+      }
+      res.status(201).json({ message: "Work field added successfully" });
     }
-    res.status(201).json({ message: "Work field added successfully" });
-  });
+  );
 };
 
 // Get All Work Fields
@@ -107,18 +111,18 @@ exports.getWorkFields = (req, res) => {
 
 // Update Work Field
 exports.updateWorkField = (req, res) => {
-  const { field_id, work_type_id, field, field_type } = req.body;
+  const { field_id, work_type_id, field, field_type, DropdownMenu } = req.body;
 
-  if (!work_type_id || !field || !field_type) {
+  if (!work_type_id || !field || !field_type || !DropdownMenu) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
   const query =
-    "UPDATE work_field SET work_type_id = ?, field = ?, field_type = ? WHERE field_id = ?";
+    "UPDATE work_field SET work_type_id = ?, field = ?, field_type = ?,DropdownMenu=? WHERE field_id = ?";
 
   db.query(
     query,
-    [work_type_id, field, field_type, field_id],
+    [work_type_id, field, field_type, field_id, DropdownMenu],
     (err, result) => {
       if (err) {
         console.error("Error updating work field:", err);

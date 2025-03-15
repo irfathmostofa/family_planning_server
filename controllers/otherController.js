@@ -110,7 +110,7 @@ exports.addHelpReport = async (req, res) => {
     return res.status(400).json({ message: "All fields are required" });
   }
   const query =
-    "INSERT INTO help_report (emp_id, subject, description,date) VALUES (?, ?, ?)";
+    "INSERT INTO help_report (emp_id, subject, description,date) VALUES (?, ?, ?,?)";
 
   db.query(query, [emp_id, subject, description, date], (err, result) => {
     if (err) {
@@ -120,5 +120,27 @@ exports.addHelpReport = async (req, res) => {
     res.status(201).json({
       message: "Help Report added successfully",
     });
+  });
+};
+
+exports.getHelpReport = async (req, res) => {
+  const { emp_id } = req.body;
+  let query = "SELECT * FROM help_report WHERE 1=1";
+  let params = [];
+
+  if (emp_id) {
+    query += " AND emp_id=?";
+    params.push(emp_id);
+  }
+
+  db.query(query, params, (err, result) => {
+    if (err) {
+      console.error("Error fetching help report:", err);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Not found" });
+    }
+    res.status(200).json({ data: result });
   });
 };

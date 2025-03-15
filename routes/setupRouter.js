@@ -18,6 +18,8 @@ const {
   getUnitById,
   updateUnit,
   deleteUnit,
+  addPageRoute,
+  deletePageRoute,
 } = require("../controllers/setupController");
 
 const verifyToken = require("../middlewares/authMiddleware");
@@ -48,5 +50,7 @@ router.post("/get-units", verifyToken, getUnits);
 router.post("/get-unit-by-id", verifyToken, getUnitById);
 router.post("/update-unit", verifyToken, updateUnit);
 router.post("/delete-unit", verifyToken, deleteUnit);
-
+//Page route
+router.post("/add-page-route", verifyToken, addPageRoute);
+router.post("/delete-page-route", verifyToken, deletePageRoute);
 module.exports = router;

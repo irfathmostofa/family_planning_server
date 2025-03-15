@@ -239,3 +239,24 @@ exports.deleteUnit = (req, res) => {
     res.status(200).json({ message: "Unit deleted successfully" });
   });
 };
+
+exports.addPageRoute = async (req, res) => {
+  const { pageName, pageRoute } = req.body;
+  const query = "INSERT INTO privillegeroute (pageName,pageRoute) VALUES (?,?)";
+  db.query(query, [pageName, pageRoute], (err, result) => {
+    if (err) return res.status(500).json(err);
+    res.status(201).json({ message: "Page Route Added successfully" });
+  });
+};
+
+exports.deletePageRoute = (req, res) => {
+  const { id } = req.body;
+  const query = "DELETE FROM privillegeroute WHERE id = ?";
+  db.query(query, [id], (err, result) => {
+    if (err) return res.status(500).json(err);
+    if (result.affectedRows === 0)
+      return res.status(404).json({ message: "Page Route not found" });
+
+    res.status(200).json({ message: "Page Route deleted successfully" });
+  });
+};
