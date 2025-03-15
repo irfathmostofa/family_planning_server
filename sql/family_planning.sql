@@ -18,7 +18,7 @@
 --
 -- Table structure for table `activity_log`
 --
-USE family_planning;
+
 DROP TABLE IF EXISTS `activity_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -66,7 +66,7 @@ CREATE TABLE `attendance` (
   PRIMARY KEY (`att_id`),
   KEY `fk_attendance_employee` (`emp_id`),
   CONSTRAINT `fk_attendance_employee` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,6 +75,7 @@ CREATE TABLE `attendance` (
 
 LOCK TABLES `attendance` WRITE;
 /*!40000 ALTER TABLE `attendance` DISABLE KEYS */;
+INSERT INTO `attendance` VALUES (1,'005431','2025-03-05','02:25:40','In','default.jpg','end work','agswrfuhauihfgajdfhahfaerbfhwyuer','','','2025-03-08 14:29:07','2025-03-08 14:29:07'),(2,'005431','2025-03-05','02:25:40','Out','default.jpg','end work','agswrfuhauihfgajdfhahfaerbfhwyuer','','','2025-03-08 14:29:21','2025-03-08 14:29:21');
 /*!40000 ALTER TABLE `attendance` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -195,7 +196,7 @@ CREATE TABLE `employee` (
 
 LOCK TABLES `employee` WRITE;
 /*!40000 ALTER TABLE `employee` DISABLE KEYS */;
-INSERT INTO `employee` VALUES (1,'005431',2,'mPair','01941637656','123456789','GEC','default.jpg','2025-03-03 12:41:17','2025-03-03 12:41:17');
+INSERT INTO `employee` VALUES (1,'005431',2,'joy','5431','123','test','default.jpg','2025-03-03 12:41:17','2025-03-08 12:44:39');
 /*!40000 ALTER TABLE `employee` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -277,6 +278,7 @@ CREATE TABLE `leave_table` (
   `leave_id` int NOT NULL AUTO_INCREMENT,
   `emp_id` varchar(50) DEFAULT NULL,
   `description` text,
+  `image` text NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `status` enum('pending','approved','rejected') NOT NULL DEFAULT 'pending',
@@ -322,6 +324,32 @@ CREATE TABLE `notice` (
 LOCK TABLES `notice` WRITE;
 /*!40000 ALTER TABLE `notice` DISABLE KEYS */;
 /*!40000 ALTER TABLE `notice` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `privillegeroute`
+--
+
+DROP TABLE IF EXISTS `privillegeroute`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `privillegeroute` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `pageName` varchar(255) NOT NULL,
+  `pageRoute` varchar(255) NOT NULL,
+  `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `privillegeroute`
+--
+
+LOCK TABLES `privillegeroute` WRITE;
+/*!40000 ALTER TABLE `privillegeroute` DISABLE KEYS */;
+/*!40000 ALTER TABLE `privillegeroute` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -514,6 +542,7 @@ CREATE TABLE `work_field` (
   `work_type_id` int DEFAULT NULL,
   `field` text NOT NULL,
   `field_type` varchar(50) NOT NULL,
+  `DropdownMenu` text NOT NULL,
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`field_id`),
@@ -586,14 +615,6 @@ LOCK TABLES `work_type` WRITE;
 /*!40000 ALTER TABLE `work_type` DISABLE KEYS */;
 /*!40000 ALTER TABLE `work_type` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'family_planning'
---
-
---
--- Dumping routines for database 'family_planning'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -604,4 +625,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-05 14:29:55
+-- Dump completed on 2025-03-15 12:31:36
