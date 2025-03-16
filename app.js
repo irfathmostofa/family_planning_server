@@ -9,6 +9,7 @@ const employeeRouter = require("./routes/employeeRouter");
 const workRouter = require("./routes/workRouter");
 const attendanceRouter = require("./routes/attendanceRouter");
 const otherRouter = require("./routes/otherRouter");
+const leaveRouter = require("./routes/leaveRouter");
 const db = require("./config/db");
 dotenv.config();
 const app = express();
@@ -29,7 +30,6 @@ db.connect((err) => {
     console.log("Connected to MySQL database");
   }
 });
-
 app.use("/api/auth", authRoutes);
 app.use("/api/role", RoleRouter);
 app.use("/api/setup", setupRouter);
@@ -37,6 +37,7 @@ app.use("/api/employee", employeeRouter);
 app.use("/api/work", workRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/other", otherRouter);
+app.use("/api/leave", leaveRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Family Planning Server");
