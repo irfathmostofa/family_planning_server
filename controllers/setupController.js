@@ -270,22 +270,19 @@ exports.deletePageRoute = (req, res) => {
 exports.getRoleWithPrivileges = async (req, res) => {
   const { role_id } = req.body;
   const query = `
-    SELECT 
+   SELECT 
+		r.role,
         p.pageName,
         p.pageRoute,
         r.create_privilege,
         r.read_privilege,
         r.edit_privilege,
-        r.delete_privilege
+        r.delete_privilege,
+        r.role_id
     FROM 
         role r
     JOIN 
         privillegeroute p 
-    ON 
-        FIND_IN_SET(p.pageRoute, r.create_privilege) 
-        OR FIND_IN_SET(p.pageRoute, r.read_privilege)
-        OR FIND_IN_SET(p.pageRoute, r.edit_privilege)
-        OR FIND_IN_SET(p.pageRoute, r.delete_privilege)
     WHERE 
         r.role_id = ?;
   `;
