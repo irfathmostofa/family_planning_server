@@ -300,7 +300,8 @@ exports.getRoleWithPrivileges = async (req, res) => {
     const storedPrivileges = results[0];
 
     const roleData = {
-      roleName: storedPrivileges.roleName,
+      roleId: storedPrivileges.role_id,
+      roleName: storedPrivileges.role,
       create_privilege: storedPrivileges.create_privilege,
       read_privilege: storedPrivileges.read_privilege,
       edit_privilege: storedPrivileges.edit_privilege,
