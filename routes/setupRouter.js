@@ -58,7 +58,7 @@ router.post("/get-page-route", verifyToken, getPrivilegeRoute);
 router.post("/delete-page-route", verifyToken, deletePageRoute);
 //Privilege
 router.post(
-  "/get-Role-With-Privileges/:id",
+  "/get-Role-With-Privileges",
   verifyToken,
   getRoleWithPrivileges
 );

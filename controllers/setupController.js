@@ -268,7 +268,7 @@ exports.deletePageRoute = (req, res) => {
 };
 
 exports.getRoleWithPrivileges = async (req, res) => {
-  const { role_id } = req.params;
+  const { role_id } = req.body;
   const query = `
     SELECT 
         p.pageName,
