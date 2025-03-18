@@ -94,7 +94,7 @@ exports.getUserFromToken = (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const query = `
-select e.emp_id,e.name,e.mobile,e.address,e.nid,e.image,d.name as designation,r.role,r.create_privilege,r.read_privilege,r.delete_privilege,r.edit_privilege,ep.district,ep.district,upazila.name as upazila,ut.name as unionName,unit.name as unitName,ap.in_time,ap.out_time,ap.leaveBalance from user as u 
+select e.emp_id,e.name,e.mobile,e.address,e.nid,e.image,e.designation_id,d.name as designation,r.role,r.create_privilege,r.read_privilege,r.delete_privilege,r.edit_privilege,ep.district,ep.district,upazila.name as upazila,ut.name as unionName,unit.name as unitName,ap.in_time,ap.out_time,ap.leaveBalance from user as u 
 join employee as e on e.emp_id=u.emp_id 
 join role as r on r.role_id=u.role_id
 join designation as d on e.designation_id=d.id

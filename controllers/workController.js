@@ -337,6 +337,7 @@ exports.AssignDesignationWorkType = async (req, res) => {
         (record) => `${record.designation_id}-${record.work_type_id}`
       )
     );
+    
     const newValues = values.filter(
       ([designation_id, work_type_id]) =>
         !existingSet.has(`${designation_id}-${work_type_id}`)
