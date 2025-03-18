@@ -30,6 +30,7 @@ db.connect((err) => {
     console.log("Connected to MySQL database");
   }
 });
+
 app.use("/api/auth", authRoutes);
 app.use("/api/role", RoleRouter);
 app.use("/api/setup", setupRouter);

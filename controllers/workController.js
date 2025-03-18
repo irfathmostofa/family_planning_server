@@ -95,15 +95,19 @@ exports.addWorkField = async (req, res) => {
 exports.getWorkFields = (req, res) => {
   const { work_type_id } = req.body;
   const params = [];
-  const query = "SELECT * FROM work_field";
+  let query = "SELECT * FROM work_field WHERE 1=1"; // Use 'let' instead of 'const'
+
   if (work_type_id) {
     query += " AND work_type_id = ?";
     params.push(work_type_id);
   }
+
   db.query(query, params, (err, results) => {
     if (err) {
       console.error("Error fetching work fields:", err);
-      return res.status(500).json({ message: "Internal server error" });
+      return res
+        .status(500)
+        .json({ message: "Internal server error", error: err });
     }
     res.status(200).json(results);
   });
@@ -337,7 +341,7 @@ exports.AssignDesignationWorkType = async (req, res) => {
         (record) => `${record.designation_id}-${record.work_type_id}`
       )
     );
-    
+
     const newValues = values.filter(
       ([designation_id, work_type_id]) =>
         !existingSet.has(`${designation_id}-${work_type_id}`)
