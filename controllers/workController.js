@@ -1,4 +1,5 @@
 const db = require("../config/db");
+const uploadMultiFiles = require("../models/uploadMultiFiles");
 
 // Add Work Type
 exports.addWorkType = async (req, res) => {
@@ -252,51 +253,117 @@ exports.deleteWork = (req, res) => {
   });
 };
 
+// exports.addWorkInfo = async (req, res) => {
+//   const { emp_id, work_type_id, date, WorkInfoData } = req.body;
+
+//   if (!emp_id || !work_type_id || !date) {
+//     return res.status(400).json({ message: "All fields are required" });
+//   }
+
+//   if (!WorkInfoData) {
+//     return res.status(400).json({ message: "WorkInfoData is required" });
+//   }
+
+//   let parseData;
+//   try {
+//     parseData = JSON.parse(WorkInfoData);
+//     if (parseData.length === 0) {
+//       return res.status(400).json({ message: "Invalid or empty data" });
+//     }
+//   } catch (error) {
+//     return res.status(400).json({ message: "Invalid JSON format" });
+//   }
+
+//   // Insert work first
+//   const workQuery =
+//     "INSERT INTO work (emp_id, work_type_id, date) VALUES (?,?,?)";
+//   db.query(workQuery, [emp_id, work_type_id, date], (err, result) => {
+//     if (err) {
+//       console.error("Error adding work:", err);
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+
+//     const workId = result.insertId;
+
+//     // Prepare data for work_info
+//     const values = parseData.map((item) => [workId, item.field_id, item.value]);
+
+//     const query = "INSERT INTO work_info (work_id, field_id, value) VALUES ?";
+//     db.query(query, [values], (err, result) => {
+//       if (err) {
+//         console.error("Error adding work info:", err);
+//         return res.status(500).json({ message: "Internal server error" });
+//       }
+
+//       res
+//         .status(201)
+//         .json({ message: "Work and Work Info added successfully" });
+//     });
+//   });
+// };
+
 exports.addWorkInfo = async (req, res) => {
-  const { emp_id, work_type_id, date, WorkInfoData } = req.body;
-
-  if (!emp_id || !work_type_id || !date) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-
-  if (!WorkInfoData) {
-    return res.status(400).json({ message: "WorkInfoData is required" });
-  }
-
-  let parseData;
-  try {
-    parseData = JSON.parse(WorkInfoData);
-    if (parseData.length === 0) {
-      return res.status(400).json({ message: "Invalid or empty data" });
-    }
-  } catch (error) {
-    return res.status(400).json({ message: "Invalid JSON format" });
-  }
-
-  // Insert work first
-  const workQuery =
-    "INSERT INTO work (emp_id, work_type_id, date) VALUES (?,?,?)";
-  db.query(workQuery, [emp_id, work_type_id, date], (err, result) => {
+  uploadMultiFiles.array("images")(req, res, async (err) => {
     if (err) {
-      console.error("Error adding work:", err);
-      return res.status(500).json({ message: "Internal server error" });
+      return res.status(400).json({ message: "Image upload failed" });
     }
 
-    const workId = result.insertId;
+    const { emp_id, work_type_id, date, WorkInfoData } = req.body;
 
-    // Prepare data for work_info
-    const values = parseData.map((item) => [workId, item.field_id, item.value]);
+    if (!emp_id || !work_type_id || !date) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-    const query = "INSERT INTO work_info (work_id, field_id, value) VALUES ?";
-    db.query(query, [values], (err, result) => {
+    if (!WorkInfoData) {
+      return res.status(400).json({ message: "WorkInfoData is required" });
+    }
+
+    let parseData;
+    try {
+      parseData = JSON.parse(WorkInfoData);
+      if (parseData.length === 0) {
+        return res.status(400).json({ message: "Invalid or empty data" });
+      }
+    } catch (error) {
+      return res.status(400).json({ message: "Invalid JSON format" });
+    }
+
+    // Insert work first
+    const workQuery =
+      "INSERT INTO work (emp_id, work_type_id, date) VALUES (?,?,?)";
+    db.query(workQuery, [emp_id, work_type_id, date], (err, result) => {
       if (err) {
-        console.error("Error adding work info:", err);
+        console.error("Error adding work:", err);
         return res.status(500).json({ message: "Internal server error" });
       }
 
-      res
-        .status(201)
-        .json({ message: "Work and Work Info added successfully" });
+      const workId = result.insertId;
+      const uploadedFiles = req.files || [];
+
+      // Map images to the correct field_id
+      const fieldImages = {};
+      uploadedFiles.forEach((file, index) => {
+        fieldImages[parseData[index]?.field_id] = file.path; // Assign image path to field_id
+      });
+
+      // Prepare data for work_info, storing the image path inside the value field
+      const values = parseData.map((item) => [
+        workId,
+        item.field_id,
+        fieldImages[item.field_id] || item.value, // If image exists, use its path; otherwise, use item.value
+      ]);
+
+      const query = "INSERT INTO work_info (work_id, field_id, value) VALUES ?";
+      db.query(query, [values], (err, result) => {
+        if (err) {
+          console.error("Error adding work info:", err);
+          return res.status(500).json({ message: "Internal server error" });
+        }
+
+        res
+          .status(201)
+          .json({ message: "Work and Work Info added successfully" });
+      });
     });
   });
 };
