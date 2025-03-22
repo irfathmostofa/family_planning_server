@@ -10,6 +10,7 @@ const workRouter = require("./routes/workRouter");
 const attendanceRouter = require("./routes/attendanceRouter");
 const otherRouter = require("./routes/otherRouter");
 const leaveRouter = require("./routes/leaveRouter");
+const dashboardRouter = require("./routes/dashboardRouter");
 const db = require("./config/db");
 dotenv.config();
 const app = express();
@@ -39,6 +40,7 @@ app.use("/api/work", workRouter);
 app.use("/api/attendance", attendanceRouter);
 app.use("/api/other", otherRouter);
 app.use("/api/leave", leaveRouter);
+app.use("/api/dashboard", dashboardRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Family Planning Server");

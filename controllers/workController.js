@@ -328,6 +328,11 @@ exports.addWorkInfo = async (req, res) => {
       return res.status(400).json({ message: "Invalid JSON format" });
     }
 
+    // Identify which fields contain image values dynamically
+    const imageFieldIds = parseData
+      .filter((item) => item.value && item.value.includes(".jpg")) // Adjust for other image extensions if needed
+      .map((item) => item.field_id);
+
     // Insert work first
     const workQuery =
       "INSERT INTO work (emp_id, work_type_id, date) VALUES (?,?,?)";
@@ -340,17 +345,21 @@ exports.addWorkInfo = async (req, res) => {
       const workId = result.insertId;
       const uploadedFiles = req.files || [];
 
-      // Map images to the correct field_id
+      // Map uploaded images to their respective field_id dynamically
       const fieldImages = {};
       uploadedFiles.forEach((file, index) => {
-        fieldImages[parseData[index]?.field_id] = file.path; // Assign image path to field_id
+        if (imageFieldIds[index] !== undefined) {
+          fieldImages[imageFieldIds[index]] = file.path;
+        }
       });
 
-      // Prepare data for work_info, storing the image path inside the value field
+      // Prepare values for inserting into work_info
       const values = parseData.map((item) => [
         workId,
         item.field_id,
-        fieldImages[item.field_id] || item.value, // If image exists, use its path; otherwise, use item.value
+        imageFieldIds.includes(item.field_id)
+          ? fieldImages[item.field_id] || item.value // Store image path if available
+          : item.value, // Otherwise, store the text value
       ]);
 
       const query = "INSERT INTO work_info (work_id, field_id, value) VALUES ?";
@@ -360,9 +369,7 @@ exports.addWorkInfo = async (req, res) => {
           return res.status(500).json({ message: "Internal server error" });
         }
 
-        res
-          .status(201)
-          .json({ message: "Work and Work Info added successfully" });
+        res.status(201).json({ message: "Work added successfully" });
       });
     });
   });

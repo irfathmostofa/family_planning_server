@@ -31,7 +31,7 @@ CREATE TABLE `activity_log` (
   PRIMARY KEY (`id`),
   KEY `fk_activity_employee` (`emp_id`),
   CONSTRAINT `fk_activity_employee` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,7 +66,7 @@ CREATE TABLE `attendance` (
   PRIMARY KEY (`att_id`),
   KEY `fk_attendance_employee` (`emp_id`),
   CONSTRAINT `fk_attendance_employee` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -97,7 +97,7 @@ CREATE TABLE `attendance_period` (
   PRIMARY KEY (`id`),
   KEY `fk_attendance_period` (`designation_id`),
   CONSTRAINT `fk_attendance_period` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,7 +122,7 @@ CREATE TABLE `designation` (
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +153,7 @@ CREATE TABLE `designation_work_type` (
   KEY `fk_work_type_designation` (`work_type_id`),
   CONSTRAINT `fk_designation_work` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_work_type_designation` FOREIGN KEY (`work_type_id`) REFERENCES `work_type` (`type_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -187,7 +187,7 @@ CREATE TABLE `employee` (
   UNIQUE KEY `emp_id` (`emp_id`),
   KEY `fk_employee_designation` (`designation_id`),
   CONSTRAINT `fk_employee_designation` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,7 +225,7 @@ CREATE TABLE `employee_placement` (
   CONSTRAINT `fk_placement_union` FOREIGN KEY (`union_id`) REFERENCES `union_table` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_placement_unit` FOREIGN KEY (`unit_id`) REFERENCES `unit` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_placement_upazila` FOREIGN KEY (`upazila_id`) REFERENCES `upazila` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -255,7 +255,7 @@ CREATE TABLE `help_report` (
   PRIMARY KEY (`id`),
   KEY `fk_help_report` (`emp_id`),
   CONSTRAINT `fk_help_report` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -287,7 +287,7 @@ CREATE TABLE `leave_table` (
   PRIMARY KEY (`leave_id`),
   KEY `fk_leave_employee` (`emp_id`),
   CONSTRAINT `fk_leave_employee` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -314,7 +314,7 @@ CREATE TABLE `notice` (
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -340,7 +340,7 @@ CREATE TABLE `privillegeroute` (
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -349,6 +349,7 @@ CREATE TABLE `privillegeroute` (
 
 LOCK TABLES `privillegeroute` WRITE;
 /*!40000 ALTER TABLE `privillegeroute` DISABLE KEYS */;
+INSERT INTO `privillegeroute` VALUES (1,'test','test','2025-03-17 10:37:47','2025-03-17 10:37:47'),(2,'test2','test2','2025-03-17 10:37:52','2025-03-17 10:37:52');
 /*!40000 ALTER TABLE `privillegeroute` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -369,7 +370,7 @@ CREATE TABLE `role` (
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -378,7 +379,7 @@ CREATE TABLE `role` (
 
 LOCK TABLES `role` WRITE;
 /*!40000 ALTER TABLE `role` DISABLE KEYS */;
-INSERT INTO `role` VALUES (1,'Super Admin','','','','','2025-03-03 12:36:36','2025-03-03 12:36:36');
+INSERT INTO `role` VALUES (1,'Super Admin','test','','','','2025-03-03 12:36:36','2025-03-17 10:44:13');
 /*!40000 ALTER TABLE `role` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -398,7 +399,7 @@ CREATE TABLE `union_table` (
   PRIMARY KEY (`id`),
   KEY `fk_union_upazila` (`upazila_id`),
   CONSTRAINT `fk_union_upazila` FOREIGN KEY (`upazila_id`) REFERENCES `upazila` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -429,7 +430,7 @@ CREATE TABLE `unit` (
   KEY `fk_unit_union` (`union_id`),
   CONSTRAINT `fk_unit_union` FOREIGN KEY (`union_id`) REFERENCES `union_table` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_unit_upazila` FOREIGN KEY (`upazila_id`) REFERENCES `upazila` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -454,7 +455,7 @@ CREATE TABLE `upazila` (
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -486,7 +487,7 @@ CREATE TABLE `user` (
   KEY `fk_user_role` (`role_id`),
   CONSTRAINT `fk_user_employee` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE SET NULL,
   CONSTRAINT `fk_user_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -518,7 +519,7 @@ CREATE TABLE `work` (
   KEY `fk_work_type` (`work_type_id`),
   CONSTRAINT `fk_work_employee` FOREIGN KEY (`emp_id`) REFERENCES `employee` (`emp_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_work_type` FOREIGN KEY (`work_type_id`) REFERENCES `work_type` (`type_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -548,7 +549,7 @@ CREATE TABLE `work_field` (
   PRIMARY KEY (`field_id`),
   KEY `fk_work_field` (`work_type_id`),
   CONSTRAINT `fk_work_field` FOREIGN KEY (`work_type_id`) REFERENCES `work_type` (`type_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -557,6 +558,7 @@ CREATE TABLE `work_field` (
 
 LOCK TABLES `work_field` WRITE;
 /*!40000 ALTER TABLE `work_field` DISABLE KEYS */;
+INSERT INTO `work_field` VALUES (1,1,'test','test','','2025-03-18 11:35:24','2025-03-18 11:35:24');
 /*!40000 ALTER TABLE `work_field` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -579,7 +581,7 @@ CREATE TABLE `work_info` (
   KEY `fk_work_info_field` (`field_id`),
   CONSTRAINT `fk_work_info` FOREIGN KEY (`work_id`) REFERENCES `work` (`work_id`) ON DELETE CASCADE,
   CONSTRAINT `fk_work_info_field` FOREIGN KEY (`field_id`) REFERENCES `work_field` (`field_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -604,7 +606,7 @@ CREATE TABLE `work_type` (
   `createDate` datetime DEFAULT CURRENT_TIMESTAMP,
   `updateDate` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_General_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -613,6 +615,7 @@ CREATE TABLE `work_type` (
 
 LOCK TABLES `work_type` WRITE;
 /*!40000 ALTER TABLE `work_type` DISABLE KEYS */;
+INSERT INTO `work_type` VALUES (1,'test','2025-03-18 11:34:19','2025-03-18 11:34:19');
 /*!40000 ALTER TABLE `work_type` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -625,4 +628,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-15 12:31:36
+-- Dump completed on 2025-03-19 13:02:35

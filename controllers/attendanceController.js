@@ -90,6 +90,19 @@ exports.deleteAttendancePeriod = async (req, res) => {
 
 exports.addAttendance = async (req, res) => {
   try {
+    // Upload Image First
+    let image;
+    try {
+      image = await uploadFile(req, res);
+      if (!image) {
+        return res.status(400).json({ message: "Image upload failed" });
+      }
+    } catch (uploadError) {
+      console.error("File upload error:", uploadError);
+      return res.status(500).json({ message: "Image upload failed" });
+    }
+
+    // Now, extract text fields
     const { emp_id, date, in_time, type, description, location, lat, longi } =
       req.body;
 
@@ -97,19 +110,7 @@ exports.addAttendance = async (req, res) => {
       return res.status(400).json({ message: "Required fields are missing" });
     }
 
-    // Mandatory Image Upload
-    let image;
-    try {
-      image = await uploadFile(req, res);
-      if (!image) {
-        return res.status(400).json({ message: "Image is required" });
-      }
-    } catch (uploadError) {
-      console.error("File upload failed:", uploadError);
-      return res.status(500).json({ message: "Image upload failed" });
-    }
-
-    // Check for duplicate entry (same emp_id, date, and type)
+    // Check for duplicate attendance
     const checkQuery =
       "SELECT * FROM attendance WHERE emp_id = ? AND date = ? AND type = ?";
     db.query(checkQuery, [emp_id, date, type], (err, results) => {
@@ -121,9 +122,7 @@ exports.addAttendance = async (req, res) => {
       if (results.length > 0) {
         return res
           .status(400)
-          .json({
-            message: "Attendance already exists on this date",
-          });
+          .json({ message: "Attendance already exists on this date" });
       }
 
       // Insert Attendance
